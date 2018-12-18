@@ -1,7 +1,9 @@
 {
   "version": "0.0.1",
-  "name": "angularjs-color-picker",
-  "private": true,
+  "name": "angularjs-color-picker-vanilla",
+  "private": false,
+  "description": "No dependencies on vanilla Js, but Typescript and Less.",
+  "homepage": "https://github.com/bezrukovyura/simple-color-picker",
   "dependencies": {},
   "devDependencies": {
     "gulp": "latest",
