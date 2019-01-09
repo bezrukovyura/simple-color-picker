@@ -1,9 +1,8 @@
-class ColorPicker {
+export class ColorPicker {
 
-  _changeFunctions: Array<(event: any) => void> = [];
   _gradientBlack: HTMLElement;
   _lastValue: string;
-  textInput: HTMLElement;
+  textInput: HTMLInputElement;
   _value: string;
   _height: number;
   _mouseY: number;
@@ -13,6 +12,7 @@ class ColorPicker {
   _gradientCircle: HTMLElement;
   _rightBar: HTMLElement;
   _isDisplay: boolean = false;
+  _changeFunctions: Array<(event: any) => void> = [];
 
   addClassName = (node: HTMLElement, str: string) => {
     if (node.className.split(' ').filter(s => s === str).length === 0) {
@@ -163,8 +163,9 @@ class ColorPicker {
 
     this.conteiner = this.cE('div');
     this.conteiner.style.display = "none";
-    this.conteiner.style.height = "215px";
-    this.conteiner.style.width = "215px";
+    this.conteiner.style.height = "150px";
+    this.conteiner.style.width = "150px";
+    this.conteiner.style.left = "-35px";
     this.addClassName(this.conteiner, 'conteiner');
     this.wrapper.appendChild(this.conteiner)
 
@@ -187,7 +188,7 @@ class ColorPicker {
     const gradientCircle = this.cE('div');
     gradientCircle.className = 'color-picker-circle';
     gradientBlack.appendChild(gradientCircle);
-    const textInput = this.cE('input');
+    const textInput = <HTMLInputElement>this.cE('input');
     (<any>textInput).maxLength = 6;
     textInput.style.width = '100%';
     textInput.style.height = '100%';
@@ -296,40 +297,36 @@ class ColorPicker {
   }
 
 
-  setHooks = ()=> {
-    
-    //открыть палитру
-    (<HTMLElement>document.querySelector("#" + this.wrapper.id + ">input")).onclick = (e) => {
-      if(!this._isDisplay){
-        this._isDisplay = !this._isDisplay;
-        (<HTMLElement>document.querySelector("#" + this.wrapper.id + " .conteiner")).style.display = "block";
-      }
-      e.stopPropagation();
-      return false;
-    }
+  setHooks = () => {
 
-    //открыть палитру
-    (<HTMLElement>document.querySelector(".conteiner.color-picker")).onclick = (e) => {
-      e.stopPropagation();
-      return false;
-    }
-    
+    document.addEventListener("click", this.viewPallet);
 
-    //закрыть палитру
-    document.onclick = (e) => {
-      if(this._isDisplay){
-        this._isDisplay = !this._isDisplay;
-        (<HTMLElement>document.querySelector("#" + this.wrapper.id + " .conteiner")).style.display = "none";
-      }
-    }
 
-    
     (<HTMLElement>document.querySelector("#" + this.wrapper.id + ">input")).onchange = (e) => {
-      this.value = (<HTMLInputElement>document.querySelector("#" + this.wrapper.id + ">input")).value;
+      this.setValueKeyboard();
     };
     (<HTMLElement>document.querySelector("#" + this.wrapper.id + ">input")).onkeyup = (e) => {
-      this.value = (<HTMLInputElement>document.querySelector("#" + this.wrapper.id + ">input")).value;
+      this.setValueKeyboard();
     };
+
+  }
+
+  private viewPallet = (e: MouseEvent) => {
+    (<HTMLElement>document.querySelector("#" + this.wrapper.id + " .conteiner")).style.display = this.isPalliteClick(e) ? "block" : "none";
+  }
+
+  private setValueKeyboard = () => {
+    this.value = (<HTMLInputElement>document.querySelector("#" + this.wrapper.id + ">input")).value;
+  }
+
+  private isPalliteClick(e: MouseEvent): boolean {
+    debugger
+    let isPickerClick = false;
+    (<HTMLElement[]>(<any>e).path).forEach(x => {
+      if (x.className && x.className.indexOf && x.id == this.wrapper.id && (x.className.indexOf("color-picker") !== -1 || x.className.indexOf("color - picker - vanilla") !== -1))
+        isPickerClick = true;
+    });
+    return isPickerClick;
   }
 
   onchange() {
@@ -394,7 +391,7 @@ class ColorPicker {
         break
       }
       case 'object': {
-        hex = this.rgbToHex(value)
+        hex = this.rgbToHex(<any>value)
       }
     }
     let rgb
@@ -409,18 +406,18 @@ class ColorPicker {
     }
     const { r, g, b } = rgb
     this._value = this.rgbToHex({ r, g, b }).toUpperCase();
-    (<HTMLInputElement>this.textInput).value = this._value;
+    this.textInput.value = this._value;
     if (resetPosition) {
       let Hsb: { h: number, s: number, b: number } = <any>this.rgbToHsb(hex);
       this._height = 1 - Hsb.h / 360
-      if (Hsb.h === 0) 
+      if (Hsb.h === 0)
         this._height = 0
       this._mouseX = Hsb.s
       this._mouseY = 1 - Hsb.b
-    } 
-    else if (this._lastValue !== this.value) 
+    }
+    else if (this._lastValue !== this.value)
       this.onchange()
-    
+
     this._lastValue = this.value
   }
 
@@ -439,7 +436,6 @@ class ColorPicker {
     )
   }
   updatePicker() {
-
     this.wrapper.style.color = this.value;
 
     const position = this.position
@@ -469,10 +465,16 @@ class ColorPicker {
     return this.getValue()
   }
   set value(value) {
+
+    debugger
+    let el = <HTMLInputElement>document.querySelector("#" + this.wrapper.id + "> input");
+    if (!el.value || !el.value.length || el.value.length == 0)
+      el.value = value;
+
     this.setValue(value, true);
     this.updatePicker();
   }
 
-
-
 }
+
+(<any>window).ColorPicker = ColorPicker;

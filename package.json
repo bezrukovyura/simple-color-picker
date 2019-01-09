@@ -1,5 +1,5 @@
 {
-  "version": "0.0.1",
+  "version": "0.0.3",
   "name": "angularjs-color-picker-vanilla",
   "private": false,
   "description": "No dependencies on vanilla Js, but Typescript and Less.",
@@ -18,6 +18,6 @@
     "del": "latest"
   },
   "scripts": {
-    "preinstall": "npm i typescript less gulp -g"
+    "globalInstall": "npm i typescript less gulp -g"
   }
 }
